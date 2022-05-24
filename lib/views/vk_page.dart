@@ -10,6 +10,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'login_page.dart';
 
 class VKPage extends StatefulWidget {
+  VKPage({Key? key}):super(key:key);
   @override
   State<StatefulWidget> createState() => _VKPageState();
 }

@@ -12,6 +12,22 @@ class NotificationDataReceivedEvent extends StompEvent {
 
   NotificationDataReceivedEvent(this.body);
 }
+class ErrorUsernameCheckingEvent extends StompEvent{
+  final String errorMessage;
+
+  ErrorUsernameCheckingEvent(this.errorMessage);
+}
+
+class ErrorConnectingToServer extends StompEvent{
+}
+
+class ConnectedToServerEvent extends StompEvent{}
+
+class ErrorFrameEvent extends StompEvent{
+  final String errorMessage;
+
+  ErrorFrameEvent(this.errorMessage);
+}
 
 class TokenStateReceivedEvent extends StompEvent{
   final int status;
@@ -23,6 +39,12 @@ class NewsDataReceivedEvent extends StompEvent {
   final String body;
 
   NewsDataReceivedEvent(this.body);
+}
+
+class MarkersDataReceivedEvent extends StompEvent{
+  final String body;
+
+  MarkersDataReceivedEvent(this.body);
 }
 
 class NotesDataReceivedEvent extends StompEvent{

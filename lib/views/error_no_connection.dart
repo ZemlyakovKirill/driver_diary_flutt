@@ -5,35 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class NoConnectionPage extends StatefulWidget {
-  Widget callbackPage;
-
-
-  NoConnectionPage(this.callbackPage);
+  NoConnectionPage({Key? key}):super(key:key);
 
   @override
   _NoConnectionPageState createState() => _NoConnectionPageState();
 }
 
 class _NoConnectionPageState extends State<NoConnectionPage> {
-  late StreamSubscription _subscription;
-  @override
-  void initState() {
-    _subscription=Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      switch (result) {
-        case ConnectivityResult.wifi:
-        case ConnectivityResult.mobile:
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => widget.callbackPage),
-                  (route) => false);
-      }});
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _subscription.cancel();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,12 +33,12 @@ class _NoConnectionPageState extends State<NoConnectionPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.wifi_off_sharp,
+                    Icons.link_off,
                     color: Colors.black,
                     size: 100,
                   ),
                   Text(
-                    'Нет подключения к интернету',
+                    'Нет подключения к серверу',
                     style: TextStyle(
                       fontFamily: 'Manrope',
                       fontSize: 15,

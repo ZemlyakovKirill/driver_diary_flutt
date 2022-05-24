@@ -1,22 +1,30 @@
 import 'package:intl/intl.dart';
-
+import 'package:timeago/timeago.dart' as timeago;
 class News {
   String title;
   String description;
-  String? imgLink;
+  String image;
   String? author;
-  DateTime? pubDate;
+  DateTime pubDate;
+  String prettyDate;
 
   News.fromJson(Map<String, dynamic> json)
       : title = json['title'].toString(),
         description = json['description'].toString(),
-        imgLink = json['imgLink'].toString(),
+        image = json['imgLink'].toString(),
         author = json['author'].toString(),
-        pubDate = DateFormat("MMM d, yyyy hh:mm:ss aa").parse(json['pubDate'].toString());
+        prettyDate=timeago.format(DateTime.now(),locale: "ru",allowFromNow: true),
+        pubDate = DateFormat("MMM d, yyyy, hh:mm:ss aa").parse(json['pubDate'].toString()){
+    prettyDate=timeago.format(pubDate,locale: "ru",allowFromNow: true);
+  }
 
   News.empty()
       : title = "",
-        description = "N/A";
+        description = "N/A",
+        prettyDate="",
+        pubDate=DateTime.now(),
+        image=""
+  ;
 
   @override
   bool operator ==(Object other) =>
@@ -25,7 +33,7 @@ class News {
           runtimeType == other.runtimeType &&
           title == other.title &&
           description == other.description &&
-          imgLink == other.imgLink &&
+          image == other.image &&
           author == other.author &&
           pubDate == other.pubDate;
 
@@ -33,12 +41,12 @@ class News {
   int get hashCode =>
       title.hashCode ^
       description.hashCode ^
-      imgLink.hashCode ^
+      image.hashCode ^
       author.hashCode ^
       pubDate.hashCode;
 
   @override
   String toString() {
-    return 'News{title: $title, description: $description, imgLink: $imgLink, author: $author, pubDate: $pubDate}';
+    return 'News{title: $title, description: $description, imgLink: $image, author: $author, pubDate: $pubDate}';
   }
 }

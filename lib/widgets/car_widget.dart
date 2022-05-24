@@ -1,97 +1,116 @@
+import 'package:driver_diary/views/edit_profile_page.dart';
+import 'package:driver_diary/views/edit_vehicle_page.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:provider/src/provider.dart';
 
-class CarPanel {
-  int id;
+import '../blocs/vehicle/vehicle_bloc.dart';
+import '../models/vehicle_model.dart';
+
+
+
+class CarPanel extends StatefulWidget {
+
+  Vehicle vehicle;
   double closedHeight = 10;
   double openedHeight = double.infinity;
   double width = double.infinity;
-  String mark;
-  String model;
-  String generation = "N/A";
-  double consumptionRoute;
-  double consumptionCity;
-  double consumptionMixed;
-  double fuelCapacity;
-  String plateNumber = "N/A";
 
   CarPanel(
-      {double? width,
-        required this.id,
-      required this.mark,
-      required this.model,
-      String? generation,
-      required this.consumptionRoute,
-      required this.consumptionCity,
-      required this.consumptionMixed,
-      required this.fuelCapacity,
-      String? plateNumber}) {
-    if (generation != null) {
-      this.generation = generation;
-    }
-    if (plateNumber != null) {
-      this.plateNumber = plateNumber;
-    }
+      {Key? key, required this.vehicle,}) :super(key:key);
+
+  @override
+  _CarPanelState createState() => _CarPanelState();
+}
+
+class _CarPanelState extends State<CarPanel> {
+
+  final ExpandableController _expandableController=ExpandableController();
+
+
+
+  @override
+  void initState() {
+
   }
 
-  Widget panel(BuildContext context) {
-    return Slidable(
-      endActionPane: ActionPane(
-        motion: ScrollMotion(),
-        children: [
-          // CustomSlidableAction(
-          //   backgroundColor: Colors.transparent,
-          //     onPressed: (_)=>context.read<>().deleteVehicle(context, id),
-          //     child: Container(
-          //       decoration: BoxDecoration(
-          //         borderRadius: BorderRadius.circular(15),
-          //         color: Color.fromRGBO(240,87,77, 1)
-          //       ),
-          //       child: Center(
-          //         child:Icon(
-          //           Icons.delete,
-          //           color: Theme.of(context).textTheme.bodyText1!.color,
-          //         )
-          //       ),
-          //     ))
-        ],
-        
-      ),
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: Theme.of(context).canvasColor),
-        width: double.infinity,
-        child: ExpandableNotifier(
-          child: ExpandablePanel(
-            theme: ExpandableThemeData(
-                crossFadePoint: 0,
-                tapBodyToCollapse: true,
-                tapBodyToExpand: true,
-                hasIcon: false),
-            collapsed: Text(
-              '$mark $model'.toUpperCase(),
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: "Manrope",
-                  color: Colors.black),
-            ),
-            expanded: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(mainAxisSize: MainAxisSize.max, children: [
-                  Text(
-                    'Марка',
+  @override
+  Widget build(BuildContext context) {
+    final _bloc=BlocProvider.of<VehicleBloc>(context);
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 5,horizontal: 0),
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: Theme.of(context).canvasColor),
+      width: double.infinity,
+      child: ExpandableNotifier(
+        controller: _expandableController,
+        child: ExpandablePanel(
+          theme: ExpandableThemeData(
+              crossFadePoint: 0,
+              tapBodyToCollapse: true,
+              tapBodyToExpand: true,
+              hasIcon: false),
+          collapsed: Text(
+            '${widget.vehicle.mark} ${widget.vehicle.model}'.toUpperCase(),
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Manrope",
+                color: Theme.of(context).textTheme.bodyText1!.color),
+          ),
+          expanded: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Row(mainAxisSize: MainAxisSize.max, children: [
+                Text(
+                  'Марка',
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    color: Theme.of(context).textTheme.bodyText1!.color,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+                  child: Text(
+                    widget.vehicle.mark,
                     style: TextStyle(
                       fontFamily: 'Manrope',
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.bodyText2!.color,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: InkWell(
+                      child: Icon(Icons.edit,
+                          size: 20,
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .color),
+                      onTap: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (_)=>EditVehiclePage(bloc: _bloc, vehicle: widget.vehicle))),
+                    ),
+                  ),
+                )
+              ]),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    'Модель',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      color: Theme.of(context).textTheme.bodyText1!.color,
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                     ),
@@ -99,200 +118,188 @@ class CarPanel {
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
                     child: Text(
-                      mark,
+                      widget.vehicle.model,
                       style: TextStyle(
                         fontFamily: 'Manrope',
-                        color: Color(0xFF444444),
+                        color: Theme.of(context).textTheme.bodyText2!.color,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                ]),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      'Модель',
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    'Поколение',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+                    child: Text(
+                      widget.vehicle.generation??"N/A",
                       style: TextStyle(
                         fontFamily: 'Manrope',
-                        color: Colors.black,
-                        fontSize: 18,
+                        color: Theme.of(context).textTheme.bodyText2!.color,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                      child: Text(
-                        model,
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          color: Color(0xFF444444),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    'Расход город',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      'Поколение',
+                  ),
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+                    child: Text(
+                      widget.vehicle.consumptionCity.toString(),
                       style: TextStyle(
                         fontFamily: 'Manrope',
-                        color: Colors.black,
-                        fontSize: 18,
+                        color: Theme.of(context).textTheme.bodyText2!.color,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                      child: Text(
-                        generation,
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          color: Color(0xFF444444),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    'Расход шоссе',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      'Расход город',
+                  ),
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+                    child: Text(
+                      widget.vehicle.consumptionRoute.toString(),
                       style: TextStyle(
                         fontFamily: 'Manrope',
-                        color: Colors.black,
-                        fontSize: 18,
+                        color: Theme.of(context).textTheme.bodyText2!.color,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                      child: Text(
-                        consumptionCity.toString(),
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          color: Color(0xFF444444),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    'Расход смешанный цикл',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      'Расход шоссе',
+                  ),
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+                    child: Text(
+                      widget.vehicle.consumptionMixed.toString(),
                       style: TextStyle(
                         fontFamily: 'Manrope',
-                        color: Colors.black,
-                        fontSize: 18,
+                        color: Theme.of(context).textTheme.bodyText2!.color,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                      child: Text(
-                        consumptionRoute.toString(),
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          color: Color(0xFF444444),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    'Запас топлива',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      'Расход смешанный цикл',
+                  ),
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+                    child: Text(
+                      widget.vehicle.fuelCapacity.toString(),
                       style: TextStyle(
                         fontFamily: 'Manrope',
-                        color: Colors.black,
-                        fontSize: 18,
+                        color: Theme.of(context).textTheme.bodyText2!.color,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                      child: Text(
-                        consumptionMixed.toString(),
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          color: Color(0xFF444444),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    'Номерной знак',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      'Запас топлива',
+                  ),
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+                    child: Text(
+                      widget.vehicle.licensePlateNumber??"N/A",
                       style: TextStyle(
                         fontFamily: 'Manrope',
-                        color: Colors.black,
-                        fontSize: 18,
+                        color: Theme.of(context).textTheme.bodyText2!.color,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                      child: Text(
-                        fuelCapacity.toString(),
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          color: Color(0xFF444444),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: InkWell(
+                        child: Icon(Icons.delete,
+                            size: 20,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .color),
+                        onTap: ()=>_bloc.add(DeleteVehicleEvent(widget.vehicle)),
                       ),
                     ),
-                  ],
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      'Номерной знак',
-                      style: TextStyle(
-                        fontFamily: 'Manrope',
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                      child: Text(
-                        plateNumber,
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          color: Color(0xFF444444),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  )
+                ],
+              ),
+            ],
           ),
         ),
       ),

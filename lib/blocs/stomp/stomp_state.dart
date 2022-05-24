@@ -15,6 +15,7 @@ class ErrorUsernameCheckingState extends StompState implements ErrorFlag{
   ErrorUsernameCheckingState(this.errorMessage);
 }
 
+
 class ConnectedState extends StompState{}
 
 class DisconnectedState extends StompState{}
@@ -48,6 +49,15 @@ class NewsDataReceivedState extends StompState {
   NewsDataReceivedState(this.body);
 }
 
+class MarkersDataReceivedState extends StompState{
+  final String body;
+
+  MarkersDataReceivedState(this.body);
+}
+class ErrorConnectingToServerState extends StompState{
+
+  ErrorConnectingToServerState();
+}
 class NotesDataReceivedState extends StompState{
   final String body;
 

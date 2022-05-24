@@ -1,28 +1,41 @@
+import 'dart:developer';
+
+import 'package:driver_diary/blocs/cost/cost_bloc.dart';
 import 'package:driver_diary/models/vehicle_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
+import '../enums/cost_enum.dart';
 
 class Cost {
   int costId;
-  String type;
+  CostType type;
   double value;
   DateTime date;
   Vehicle vehicle;
+  String prettyDate;
 
-  Cost(this.costId, this.type, this.value, this.date, this.vehicle);
+  Cost({required this.costId, required this.type, required this.value, required this.date, required this.vehicle})
+    :prettyDate=timeago.format(DateTime.now(),locale:"ru",allowFromNow: true){
+    prettyDate=timeago.format(date,locale:"ru",allowFromNow: true);
+  }
 
   Cost.fromJson(Map<String, dynamic> json)
       : costId = int.parse(json["costId"].toString()),
-        type = "Другое",
+        type = CostType.OTHER,
         value = double.parse(json["value"].toString()),
-        date = DateFormat("MMM d, yyyy hh:mm:ss aa")
+        prettyDate=timeago.format(DateTime.now(),locale:"ru"),
+        date = DateFormat("MMM d, yyyy, hh:mm:ss aa")
             .parse(json['date'].toString()),
         vehicle = Vehicle.fromJson(json['userVehicle']['vehicle']){
-    type=_getType(json["type"].toString());
+    type=getCostType(json["type"].toString())??CostType.OTHER;
+    prettyDate=timeago.format(date,locale:"ru",allowFromNow: true);
   }
 
   String _getType(String serverType){
+    log(serverType);
     if(serverType.contains("REFUELING")){
       return "Заправка";
     }else if(serverType.contains("WASHING")){
@@ -34,13 +47,13 @@ class Cost {
     }
   }
 
-  Widget getAsWidget(BuildContext context) {
+  Widget getAsWidget(BuildContext context,CostBloc costBloc) {
     return Container(
         margin: EdgeInsets.only(top: 10),
         padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: Theme.of(context).primaryColor),
+            color: Theme.of(context).canvasColor),
         child: Column(
           children: [
             Row(
@@ -48,7 +61,7 @@ class Cost {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  type,
+                  type.getAsInput(),
                   style: TextStyle(
                       color: Theme.of(context).textTheme.bodyText2!.color,
                       fontSize: 12,
@@ -56,7 +69,7 @@ class Cost {
                       fontWeight: FontWeight.w500),
                 ),
                 InkWell(
-                  onTap: null,
+                  onTap: ()=>costBloc.add(CostDeleteEvent(this)),
                   child: Icon(
                     Icons.delete,
                     color: Colors.redAccent,
@@ -78,14 +91,6 @@ class Cost {
                         fontFamily: "Manrope",
                         fontWeight: FontWeight.w600),
                   ),
-                  Text(
-                    DateFormat("hh:mm").format(date),
-                    style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyText2!.color,
-                        fontSize: 12,
-                        fontFamily: "Manrope",
-                        fontWeight: FontWeight.w500),
-                  ),
                 ],
               ),
             ),
@@ -102,7 +107,7 @@ class Cost {
                       fontWeight: FontWeight.w600),
                 ),
                 Text(
-                  DateFormat("dd MMMM yy").format(date),
+                  prettyDate,
                   style: TextStyle(
                       color: Theme.of(context).textTheme.bodyText2!.color,
                       fontSize: 12,

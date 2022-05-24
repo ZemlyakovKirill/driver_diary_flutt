@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 import 'dart:developer';
-
+import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:driver_diary/utils/error_bloc.dart';
 import 'package:flutter/cupertino.dart';
@@ -44,7 +44,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
     on<LoginViaGoogleEvent>((event, emit) async {
       try{
-        final response=await http.post(Uri.parse(event.url),encoding: Encoding.getByName("UTF-8"));
+        final response=await http.get(Uri.parse(event.url));
         if(response.statusCode==200){
           final responseToken=json.decode(utf8.decode(response.body.runes.toList()))['response'];
           add(SaveTokenEvent(responseToken));
@@ -53,14 +53,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           final responseError=json.decode(utf8.decode(response.body.runes.toList()))['response'];
           emit(ErrorGoogleAuthState(responseError));
         }
-      }on Exception{
-        emit(ErrorGoogleAuthState("Ошибка"));
+      }on TimeoutException{
+        emit(ErrorAuthorizingState(
+            errorMessage: "Превышено время ожидания"
+        ));
+      }on SocketException{
+        emit(ErrorAuthorizingState(
+            errorMessage: "Нет подключения к серверу"
+        ));
+      }on Exception catch (e){
+        log(e.toString());
+        emit(ErrorAuthorizingState(errorMessage: "Ошибка"));
+      }on Error catch (e){
+        log(e.toString());
+        emit(ErrorAuthorizingState(errorMessage: "Ошибка"));
       }
     });
 
     on<LoginViaVKEvent>((event, emit) async{
       try{
-        final response=await http.post(Uri.parse(event.url),encoding: Encoding.getByName("UTF-8"));
+        final response=await http.get(Uri.parse(event.url));
         if(response.statusCode==200){
           final responseToken=json.decode(utf8.decode(response.body.runes.toList()))['response'];
           add(SaveTokenEvent(responseToken));
@@ -69,9 +81,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           final responseError=json.decode(utf8.decode(response.body.runes.toList()))['response'];
           emit(ErrorVKAuthState(responseError));
         }
-      }on Exception{
-        emit(ErrorVKAuthState("Ошибка"));
-    }
+      }on TimeoutException{
+        emit(ErrorAuthorizingState(
+            errorMessage: "Превышено время ожидания"
+        ));
+      }on SocketException{
+        emit(ErrorAuthorizingState(
+            errorMessage: "Нет подключения к серверу"
+        ));
+      }on Exception catch (e){
+        log(e.toString());
+        emit(ErrorAuthorizingState(errorMessage: "Ошибка"));
+      }on Error catch (e){
+        log(e.toString());
+        emit(ErrorAuthorizingState(errorMessage: "Ошибка"));
+      }
     });
   }
 
@@ -91,19 +115,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       headers.putIfAbsent("Authorization", () => "Bearer " + token);
       try {
         final response = await http
-            .post(Uri.parse("https://themlyakov.ru:8080/user/testtoken"),
+            .get(Uri.parse("https://themlyakov.ru:8080/user/testtoken"),
             headers: headers)
             .timeout(Duration(seconds: 10));
         if (response.statusCode == 200) {
           emit(AuthorizedState(token: token));
           return;
-        }else if(response.statusCode == 403){
+        }else{
           emit(UnAuthorizedState());
           return;
         }
-      }on Exception {
+      }on TimeoutException{
+        emit(ErrorAuthorizingState(
+            errorMessage: "Превышено время ожидания"
+        ));
+      }on SocketException{
+        emit(ErrorAuthorizingState(
+            errorMessage: "Нет подключения к серверу"
+        ));
+      }on Exception catch (e){
+        log(e.toString());
         emit(ErrorAuthorizingState(errorMessage: "Ошибка"));
-        return;
+      }on Error catch (e){
+        log(e.toString());
+        emit(ErrorAuthorizingState(errorMessage: "Ошибка"));
       }
     }
     emit(UnAuthorizedState());
@@ -112,36 +147,72 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
          RegistrateUserEvent event,
          Emitter<AuthState> emit
       ) async {
-    final response = await http.post(
-            Uri.parse('https://themlyakov.ru:8080/auth/registrate' +
-                '?username=${event.username}' +
-                '&password=${event.password}' +
-                '&lname=${event.lastName}' +
-                '&fname=${event.firstName}' +
-                '&email=${event.email}' +
-                '&telnum='+(event.phone ?? '')),
-            encoding: Encoding.getByName("UTF-8"));
-    if (response.statusCode == 201) {
-     emit(UserCreatedState());
-    } else {
-      String errorMessage=json.decode(utf8.decode(response.body.runes.toList()))['response'];
-      emit(ErrorCreatingState(errorMessage));
+    try{
+      final response = await http.post(
+          Uri.parse('https://themlyakov.ru:8080/auth/registrate' +
+              '?username=${event.username}' +
+              '&password=${event.password}' +
+              '&lname=${event.lastName}' +
+              '&fname=${event.firstName}' +
+              '&email=${event.email}' +
+              '&telnum=' +
+              (event.phone ?? '')),
+          encoding: Encoding.getByName("UTF-8"));
+      if (response.statusCode == 201) {
+        add(GetAndSaveTokenEvent(username: event.username, password: event.password));
+        emit(UserCreatedState());
+      } else {
+        String errorMessage =
+            json.decode(utf8.decode(response.body.runes.toList()))['response'];
+        emit(ErrorCreatingState(errorMessage));
+      }
+    }on TimeoutException{
+      emit(ErrorAuthorizingState(
+          errorMessage: "Превышено время ожидания"
+      ));
+    }on SocketException{
+      emit(ErrorAuthorizingState(
+          errorMessage: "Нет подключения к серверу"
+      ));
+    }on Exception catch (e){
+      log(e.toString());
+      emit(ErrorAuthorizingState(errorMessage: "Ошибка"));
+    }on Error catch (e){
+      log(e.toString());
+      emit(ErrorAuthorizingState(errorMessage: "Ошибка"));
     }
   }
   Future<void> _getToken(GetAndSaveTokenEvent event,Emitter<AuthState> emit) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response =await  http.post(
+    try{
+      final response = await http.post(
           Uri.parse(
               "https://themlyakov.ru:8080/auth/login?username=${event.username}&password=${event.password}"),
           encoding: Encoding.getByName('utf-8'));
-    final responseString =
-    json.decode(utf8.decode(response.body.runes.toList()))['response'];
-    if (response.statusCode == 200) {
-      add(SaveTokenEvent(responseString));
-      add(CheckAuthEvent());
-      emit(TokenReceivedState());
-    } else {
-      emit(state);
+      final responseString =
+          json.decode(utf8.decode(response.body.runes.toList()))['response'];
+      if (response.statusCode == 200) {
+        log(responseString);
+        add(SaveTokenEvent(responseString));
+        add(CheckAuthEvent());
+        emit(TokenReceivedState());
+      } else {
+        emit(ErrorAuthorizingState(errorMessage: responseString));
+      }
+    }on TimeoutException{
+      emit(ErrorAuthorizingState(
+          errorMessage: "Превышено время ожидания"
+      ));
+    }on SocketException{
+      emit(ErrorAuthorizingState(
+          errorMessage: "Нет подключения к серверу"
+      ));
+    }on Exception catch (e){
+      log(e.toString());
+      emit(ErrorAuthorizingState(errorMessage: "Ошибка"));
+    }on Error catch (e){
+      log(e.toString());
+      emit(ErrorAuthorizingState(errorMessage: "Ошибка"));
     }
   }
 }

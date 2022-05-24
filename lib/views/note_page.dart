@@ -1,7 +1,7 @@
 import 'package:driver_diary/blocs/note/note_bloc.dart';
 import 'package:driver_diary/blocs/page/page_bloc.dart';
-import 'package:driver_diary/blocs/stomp/stomp_bloc.dart';
 import 'package:driver_diary/utils/msg_utils.dart';
+import 'package:driver_diary/widgets/stomp_listener.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,13 +13,7 @@ class NotePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _pageBloc = BlocProvider.of<PageBloc>(context);
-    final _noteBloc = BlocProvider.of<NoteBloc>(context);
-    return BlocListener<StompBloc, StompState>(
-      listener: (context, state) {
-        _noteBloc.add(GetNotesOverdued());
-        _noteBloc.add(GetNotesCompleted());
-        _noteBloc.add(GetNotesUncompleted());
-      },
+    return StompListener(
       child: Builder(builder: (context) {
         if (_pageBloc.state is PageChangedState &&
             (_pageBloc.state as PageChangedState).tabsCount == 3) {
@@ -50,8 +44,14 @@ class NoteOverduedPage extends StatelessWidget {
         width: double.infinity,
         height: double.infinity,
         child: BlocConsumer<NoteBloc, NoteState>(listener: (cont, state) {
-          if (state is NotesOverduedErrorState) {
+          if (state is NotesErrorState) {
             errorSnack(cont, state.errorMessage);
+          }
+          if (state is NoteDirectionChangedState ||
+              state is NoteSearchFilterChangedState) {
+            _noteBloc.add(GetNotesOverdued());
+            _noteBloc.add(GetNotesCompleted());
+            _noteBloc.add(GetNotesUncompleted());
           }
         }, builder: (cont, state) {
           if (_noteBloc.overduedNotes != null) {
@@ -59,8 +59,9 @@ class NoteOverduedPage extends StatelessWidget {
               physics: BouncingScrollPhysics(),
               scrollDirection: Axis.vertical,
               itemCount: _noteBloc.overduedNotes!.length,
-              itemBuilder: (BuildContext context, int index) =>
-                  _noteBloc.overduedNotes![index].getAsWidget(context),
+              itemBuilder: (BuildContext context, int index) => _noteBloc
+                  .overduedNotes![index]
+                  .getAsWidget(context, _noteBloc),
             );
           } else {
             return ListView.builder(
@@ -72,7 +73,7 @@ class NoteOverduedPage extends StatelessWidget {
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    color: Theme.of(context).canvasColor),
+                    color: Theme.of(context).primaryColor),
                 width: double.infinity,
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
@@ -152,8 +153,14 @@ class NoteCompletedPage extends StatelessWidget {
         width: double.infinity,
         height: double.infinity,
         child: BlocConsumer<NoteBloc, NoteState>(listener: (cont, state) {
-          if (state is NotesCompletedErrorState) {
+          if (state is NotesErrorState) {
             errorSnack(cont, state.errorMessage);
+          }
+          if (state is NoteDirectionChangedState ||
+              state is NoteSearchFilterChangedState) {
+            _noteBloc.add(GetNotesOverdued());
+            _noteBloc.add(GetNotesCompleted());
+            _noteBloc.add(GetNotesUncompleted());
           }
         }, builder: (cont, state) {
           if (_noteBloc.completedNotes != null) {
@@ -161,8 +168,9 @@ class NoteCompletedPage extends StatelessWidget {
               physics: BouncingScrollPhysics(),
               scrollDirection: Axis.vertical,
               itemCount: _noteBloc.completedNotes!.length,
-              itemBuilder: (BuildContext context, int index) =>
-                  _noteBloc.completedNotes![index].getAsWidget(context),
+              itemBuilder: (BuildContext context, int index) => _noteBloc
+                  .completedNotes![index]
+                  .getAsWidget(context, _noteBloc),
             );
           } else {
             return ListView.builder(
@@ -174,7 +182,7 @@ class NoteCompletedPage extends StatelessWidget {
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    color: Theme.of(context).canvasColor),
+                    color: Theme.of(context).primaryColor),
                 width: double.infinity,
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
@@ -254,8 +262,14 @@ class NoteUncompletedPage extends StatelessWidget {
         width: double.infinity,
         height: double.infinity,
         child: BlocConsumer<NoteBloc, NoteState>(listener: (cont, state) {
-          if (state is NotesUncompletedErrorState) {
+          if (state is NotesErrorState) {
             errorSnack(cont, state.errorMessage);
+          }
+          if (state is NoteDirectionChangedState ||
+              state is NoteSearchFilterChangedState) {
+            _noteBloc.add(GetNotesOverdued());
+            _noteBloc.add(GetNotesCompleted());
+            _noteBloc.add(GetNotesUncompleted());
           }
         }, builder: (cont, state) {
           if (_noteBloc.uncompletedNotes != null) {
@@ -263,8 +277,9 @@ class NoteUncompletedPage extends StatelessWidget {
               physics: BouncingScrollPhysics(),
               scrollDirection: Axis.vertical,
               itemCount: _noteBloc.uncompletedNotes!.length,
-              itemBuilder: (BuildContext context, int index) =>
-                  _noteBloc.uncompletedNotes![index].getAsWidget(context),
+              itemBuilder: (BuildContext context, int index) => _noteBloc
+                  .uncompletedNotes![index]
+                  .getAsWidget(context, _noteBloc),
             );
           } else {
             return ListView.builder(
@@ -276,7 +291,7 @@ class NoteUncompletedPage extends StatelessWidget {
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    color: Theme.of(context).canvasColor),
+                    color: Theme.of(context).primaryColor),
                 width: double.infinity,
                 child: Column(
                   mainAxisSize: MainAxisSize.max,

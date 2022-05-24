@@ -1,3 +1,5 @@
+import 'package:driver_diary/widgets/extens.dart';
+
 class User {
   int id;
   String username;
@@ -5,6 +7,8 @@ class User {
   String fname;
   String? phone;
   String email;
+  bool isVk;
+  bool isGoogle;
 
   User(
       {required this.id,
@@ -12,7 +16,10 @@ class User {
       required this.lname,
       required this.fname,
       this.phone,
-      required this.email});
+      required this.email,
+        required this.isGoogle,
+        required this.isVk
+      });
 
   User.fromJson(Map<String, dynamic> json)
       : id = int.parse(json['id'].toString()),
@@ -20,15 +27,29 @@ class User {
         lname = json['lastName'].toString(),
         fname = json['firstName'].toString(),
         email = json['email'].toString(),
-        phone = json.containsKey('telnum') ? json['telnum'].toString() : 'N/A';
+        phone = json.containsKey('telnum') ? json['telnum'].toString() : "",
+        isVk=json["isVk"].toString().toBool(),
+        isGoogle=json["isGoogle"].toString().toBool();
+
+  User.from(User another)
+    : id=another.id,
+      username=another.username,
+      lname=another.lname,
+      fname=another.fname,
+      email=another.email,
+      isGoogle=another.isGoogle,
+      isVk=another.isVk,
+      phone=another.phone;
 
   User.empty()
       : id = 0,
-        username = "N/A",
-        lname = "N/A",
-        fname = "N/A",
-        email = "N/A",
-        phone = "N/A";
+        username = "",
+        lname = "",
+        fname = "",
+        email = "",
+        isGoogle=false,
+        isVk=false,
+        phone = "";
 
   @override
   bool operator ==(Object other) =>

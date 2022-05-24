@@ -10,3 +10,6 @@ class NewsErrorState extends NewsState {
 
   NewsErrorState(this.errorMessage);
 }
+class NewsSearchFilterChangedState extends NewsState{
+
+}

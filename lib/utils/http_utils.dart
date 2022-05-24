@@ -30,3 +30,18 @@ Future<http.Response> secureRequest(BuildContext context,
         headers: {"Content-Type": "application/json; charset=utf-8"});
   }
 }
+
+enum Direction{
+  asc,
+  desc
+}
+extension DirectionExt on Direction{
+  String asParameter(){
+    switch(this){
+      case Direction.asc:
+        return "ASC";
+      case Direction.desc:
+        return "DESC";
+    }
+  }
+}

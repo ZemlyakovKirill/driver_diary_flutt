@@ -1,207 +1,196 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:driver_diary/utils/my_custom_icons_icons.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class News{
+
+class NewsWidget extends StatefulWidget {
   String title;
   String description;
-  String? imgLink;
+  String imageLink;
   String? author;
-  DateTime? pubDate;
+  String prettyDate;
 
-  News({required this.title,required this.description, this.imgLink,this.author,this.pubDate});
+  NewsWidget({Key? key,required this.title,required this.description, required this.imageLink,this.author,required this.prettyDate})
+  :super(key:key);
 
-  Widget panel(BuildContext context) {
-    ExpandableController _controller=ExpandableController(initialExpanded: false);
+  @override
+  _NewsWidgetState createState() => _NewsWidgetState();
+}
 
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 5),
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Theme
-              .of(context)
-              .canvasColor),
-      width: double.infinity,
-      child: ExpandableNotifier(
-        child: Expandable(
-          controller: _controller,
-          theme: const ExpandableThemeData(
-              crossFadePoint: 0,
-              tapBodyToCollapse: true,
-              tapBodyToExpand: true,
-              hasIcon: false),
-          collapsed: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    author ?? "",
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      color: Color(0xFFB4B4B4),
-                      fontSize: 8,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    DateFormat("dd MMMM yy").format(
-                        (pubDate ?? DateTime.now())).toString(),
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      color: Color(0xFFB4B4B4),
-                      fontSize: 8,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  )
-                ],
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Image.network(
-                      imgLink ??
-                          "https://cdn3.vectorstock.com/i/1000x1000/87/02/auto-car-logo-template-icon-vector-21468702.jpg",
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: AlignmentDirectional(1, -0.05),
-                      child: Text(
-                        DateFormat("hh:mm")
-                            .format((pubDate ?? DateTime.now()))
-                            .toString(),
-                        textAlign: TextAlign.end,
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          color: Color(0xFFB4B4B4),
-                          fontSize: 8,
-                          fontWeight: FontWeight.w600,
-                        ),
+class _NewsWidgetState extends State<NewsWidget> {
+  final ExpandableController _expandableController=ExpandableController();
+
+
+  @override
+  void initState() {
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: (){
+        _expandableController.expanded=!_expandableController.expanded;
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 5),
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Theme
+                .of(context)
+                .primaryColor),
+        width: double.infinity,
+        child: ExpandableNotifier(
+          controller: _expandableController,
+          child: Expandable(
+            theme: const ExpandableThemeData(
+                crossFadePoint: 0,
+                tapBodyToCollapse: true,
+                tapBodyToExpand: true,
+                hasIcon: false),
+            collapsed: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.author ?? "",
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        color: Theme.of(context).textTheme.bodyText1!.color,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  )
-                ],
-              ),
-              Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
+                    Text(
+                      widget.prettyDate,
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        color: Theme.of(context).textTheme.bodyText1!.color,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  ],
                 ),
-              )
-            ],
-          ),
-          expanded: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    author ?? "",
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      color: Color(0xFFB4B4B4),
-                      fontSize: 8,
-                      fontWeight: FontWeight.w600,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.imageLink,
+                    placeholder: (context,_)=>CircularProgressIndicator(
+                      color: Theme.of(context).textTheme.bodyText1!.color,
                     ),
-                  ),
-                  Text(
-                    DateFormat("dd M yyyy").format(
-                        (pubDate ?? DateTime.now())).toString(),
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      color: Color(0xFFB4B4B4),
-                      fontSize: 8,
-                      fontWeight: FontWeight.w600,
+                    errorWidget: (context,_,__)=>Icon(
+                      MyCustomIcons.app_icon,
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      size: 24,
                     ),
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
                   )
-                ],
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Image.network(
-                      imgLink ??
-                          "https://cdn3.vectorstock.com/i/1000x1000/87/02/auto-car-logo-template-icon-vector-21468702.jpg",
-                      width: 50,
-                      height: 50,
-                      color: Theme
-                          .of(context)
-                          .canvasColor,
-                      fit: BoxFit.cover,
+                ),
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+                  child: Text(
+                    widget.title,
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).textTheme.bodyText1!.color,
                     ),
                   ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Text(
-                        DateFormat("H:mm")
-                            .format((pubDate ?? DateTime.now()))
-                            .toString(),
-                        textAlign: TextAlign.end,
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          color: Color(0xFFB4B4B4),
-                          fontSize: 8,
-                          fontWeight: FontWeight.w600,
-                        ),
+                )
+              ],
+            ),
+            expanded: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.author ?? "",
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        color: Theme.of(context).textTheme.bodyText1!.color,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  )
-                ],
-              ),
-              Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                    Text(
+                      widget.prettyDate,
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        color: Theme.of(context).textTheme.bodyText1!.color,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  ],
+                ),
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.imageLink,
+                      placeholder: (context,_)=>CircularProgressIndicator(
+                        color: Theme.of(context).textTheme.bodyText1!.color,
+                      ),
+                      errorWidget: (context,_,__)=>Icon(
+                        MyCustomIcons.app_icon,
+                        color: Theme.of(context).textTheme.bodyText1!.color,
+                        size: 48,
+                      ),
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    )
+                ),
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+                  child: Text(
+                    widget.title,
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).textTheme.bodyText1!.color
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
-                child: Text(
-                  description,
-                  style: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+                  child: Text(
+                    widget.description,
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
+
+
+
 

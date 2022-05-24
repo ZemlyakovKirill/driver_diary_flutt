@@ -1,15 +1,23 @@
 import 'package:driver_diary/blocs/news/news_bloc.dart';
-import 'package:driver_diary/blocs/stomp/stomp_bloc.dart';
 import 'package:driver_diary/utils/msg_utils.dart';
 import 'package:driver_diary/widgets/news_widget.dart';
+import 'package:driver_diary/widgets/stomp_listener.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletons/skeletons.dart';
 
-class NewsPage extends StatelessWidget {
+class NewsPage extends StatefulWidget {
   NewsPage({Key? key}) : super(key: key);
 
+  @override
+  State<NewsPage> createState() => _NewsPageState();
+}
+
+class _NewsPageState extends State<NewsPage> {
+
+  final ExpandableController _expandableController=ExpandableController();
   @override
   Widget build(BuildContext context) {
     final _newsBloc = BlocProvider.of<NewsBloc>(context);
@@ -17,12 +25,7 @@ class NewsPage extends StatelessWidget {
       _newsBloc.add(GetNewsEvent());
     }
     return SafeArea(
-      child: BlocListener<StompBloc, StompState>(
-        listener: (context, state) {
-          if (state is NewsDataReceivedState) {
-            _newsBloc.add(GetNewsEvent());
-          }
-        },
+      child: StompListener(
         child: Container(
           margin: EdgeInsets.all(10),
           width: double.infinity,
@@ -31,19 +34,22 @@ class NewsPage extends StatelessWidget {
             if (state is NewsErrorState) {
               errorSnack(cont, state.errorMessage);
             }
+            if(state is NewsSearchFilterChangedState){
+              _newsBloc.add(GetNewsEvent());
+            }
           }, builder: (cont, state) {
             if (_newsBloc.news != null) {
               return ListView(
                 physics: BouncingScrollPhysics(),
                 scrollDirection: Axis.vertical,
                 children: _newsBloc.news!
-                    .map((e) => News(
+                    .map((e) => NewsWidget(
                           title: e.title,
-                          description: e.title,
-                          imgLink: e.imgLink,
-                          pubDate: e.pubDate,
+                          description: e.description,
+                          imageLink: e.image,
+                          prettyDate: e.prettyDate,
                           author: e.author,
-                        ).panel(cont))
+                        ))
                     .toList(),
               );
             } else {
@@ -56,7 +62,7 @@ class NewsPage extends StatelessWidget {
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
-                      color: Theme.of(context).canvasColor),
+                      color: Theme.of(context).primaryColor),
                   width: double.infinity,
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
