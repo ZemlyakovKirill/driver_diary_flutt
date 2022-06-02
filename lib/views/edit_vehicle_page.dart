@@ -78,6 +78,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
               errorSnack(context, state.errorMessage);
             }
             if (state is VehicleEditedState) {
+              infoSnack(context, "Траспортное средство добавлено");
               Navigator.of(context).pop();
             }
           },

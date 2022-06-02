@@ -41,6 +41,7 @@ class _AddCostPageState extends State<AddCostPage> {
           errorSnack(context, state.errorMessage);
         }
         if (state is ct.CostAddedState) {
+          infoSnack(context, "Расход добавлен");
           Navigator.of(context).pop();
         }
       },

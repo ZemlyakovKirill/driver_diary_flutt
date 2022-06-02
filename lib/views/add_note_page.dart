@@ -66,6 +66,7 @@ class _AddNotePageState extends State<AddNotePage> {
               errorSnack(context, state.errorMessage);
             }
             if(state is nt.CostNoteAddedState||state is nt.NotCostNoteAddedState){
+              infoSnack(context,"Заметка добавлена");
               Navigator.of(context).pop();
             }
           },

@@ -109,7 +109,11 @@ class RegistratePageSecond extends StatelessWidget {
                                     Text(
                                       "Личные данные",
                                       style: TextStyle(
-                                          fontWeight: FontWeight.w600, fontSize: 15),
+                                          color: Theme.of(context).textTheme.bodyText1!.color,
+                                          fontFamily: "Manrope",
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600
+                                      ),
                                     ),
                                     Container(
                                       padding: EdgeInsets.symmetric(
@@ -122,9 +126,21 @@ class RegistratePageSecond extends StatelessWidget {
                                         controller: _lastNameController,
                                         maxLines: 1,
                                         maxLength: 100,
+                                        style: TextStyle(
+                                            color: Theme.of(context).textTheme.bodyText1!.color,
+                                            fontFamily: "Manrope",
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600
+                                        ),
                                         decoration: InputDecoration(
                                             hintText: "Фамилия",
                                             counterText: "",
+                                            hintStyle: TextStyle(
+                                                color: Theme.of(context).textTheme.bodyText2!.color,
+                                                fontFamily: "Manrope",
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600
+                                            ),
                                             border: InputBorder.none),
                                       ),
                                     ),
@@ -139,9 +155,21 @@ class RegistratePageSecond extends StatelessWidget {
                                         controller: _firstNameController,
                                         maxLines: 1,
                                         maxLength: 100,
+                                        style: TextStyle(
+                                            color: Theme.of(context).textTheme.bodyText1!.color,
+                                            fontFamily: "Manrope",
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600
+                                        ),
                                         decoration: InputDecoration(
                                           hintText: "Имя",
                                           counterText: "",
+                                          hintStyle: TextStyle(
+                                              color: Theme.of(context).textTheme.bodyText2!.color,
+                                              fontFamily: "Manrope",
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600
+                                          ),
                                           border: InputBorder.none,
                                         ),
                                       ),
@@ -158,9 +186,21 @@ class RegistratePageSecond extends StatelessWidget {
                                         controller: _emailController,
                                         maxLines: 1,
                                         maxLength: 100,
+                                        style: TextStyle(
+                                            color: Theme.of(context).textTheme.bodyText1!.color,
+                                            fontFamily: "Manrope",
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600
+                                        ),
                                         decoration: InputDecoration(
                                           hintText: "Почта",
                                           counterText: "",
+                                          hintStyle: TextStyle(
+                                              color: Theme.of(context).textTheme.bodyText2!.color,
+                                              fontFamily: "Manrope",
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600
+                                          ),
                                           border: InputBorder.none,
                                         ),
                                       ),
@@ -177,8 +217,20 @@ class RegistratePageSecond extends StatelessWidget {
                                         controller: _phoneController,
                                         maxLines: 1,
                                         maxLength: 100,
+                                        style: TextStyle(
+                                            color: Theme.of(context).textTheme.bodyText1!.color,
+                                            fontFamily: "Manrope",
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600
+                                        ),
                                         decoration: InputDecoration(
                                           hintText: "Телефон",
+                                          hintStyle: TextStyle(
+                                              color: Theme.of(context).textTheme.bodyText2!.color,
+                                              fontFamily: "Manrope",
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600
+                                          ),
                                           counterText: "",
                                           border: InputBorder.none,
                                         ),

@@ -95,8 +95,11 @@ class LoginPage extends StatelessWidget {
                                       Text(
                                         "Авторизация",
                                         style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 15),
+                                            color: Theme.of(context).textTheme.bodyText1!.color,
+                                            fontFamily: "Manrope",
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600
+                                        ),
                                       ),
                                       Container(
                                         padding: EdgeInsets.symmetric(
@@ -112,9 +115,21 @@ class LoginPage extends StatelessWidget {
                                           controller: _usernameController,
                                           maxLines: 1,
                                           maxLength: 50,
+                                          style: TextStyle(
+                                              color: Theme.of(context).textTheme.bodyText1!.color,
+                                              fontFamily: "Manrope",
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600
+                                          ),
                                           decoration: InputDecoration(
                                               hintText: "Никнейм",
                                               counterText: "",
+                                              hintStyle: TextStyle(
+                                                  color: Theme.of(context).textTheme.bodyText2!.color,
+                                                  fontFamily: "Manrope",
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600
+                                              ),
                                               border: InputBorder.none),
                                         ),
                                       ),
@@ -133,9 +148,21 @@ class LoginPage extends StatelessWidget {
                                           obscureText: true,
                                           maxLines: 1,
                                           maxLength: 255,
+                                          style: TextStyle(
+                                              color: Theme.of(context).textTheme.bodyText1!.color,
+                                              fontFamily: "Manrope",
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600
+                                          ),
                                           decoration: InputDecoration(
                                             hintText: "Пароль",
                                             counterText: "",
+                                            hintStyle: TextStyle(
+                                                color: Theme.of(context).textTheme.bodyText2!.color,
+                                                fontFamily: "Manrope",
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600
+                                            ),
                                             border: InputBorder.none,
                                           ),
                                         ),

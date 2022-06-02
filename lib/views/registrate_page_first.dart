@@ -83,8 +83,11 @@ class RegistratePageFirst extends StatelessWidget {
                                       Text(
                                         "Регистрация",
                                         style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 15),
+                                            color: Theme.of(context).textTheme.bodyText1!.color,
+                                            fontFamily: "Manrope",
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600
+                                        ),
                                       ),
                                       Container(
                                         padding: EdgeInsets.symmetric(
@@ -97,9 +100,21 @@ class RegistratePageFirst extends StatelessWidget {
                                           controller: _usernameController,
                                           maxLines: 1,
                                           maxLength: 50,
+                                          style: TextStyle(
+                                              color: Theme.of(context).textTheme.bodyText1!.color,
+                                              fontFamily: "Manrope",
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600
+                                          ),
                                           decoration: InputDecoration(
                                               hintText: "Никнейм",
                                               counterText: "",
+                                              hintStyle: TextStyle(
+                                                  color: Theme.of(context).textTheme.bodyText2!.color,
+                                                  fontFamily: "Manrope",
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600
+                                              ),
                                               border: InputBorder.none),
                                         ),
                                       ),
@@ -115,10 +130,22 @@ class RegistratePageFirst extends StatelessWidget {
                                           obscureText: true,
                                           maxLines: 1,
                                           maxLength: 255,
+                                          style: TextStyle(
+                                              color: Theme.of(context).textTheme.bodyText1!.color,
+                                              fontFamily: "Manrope",
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600
+                                          ),
                                           decoration: InputDecoration(
                                             hintText: "Пароль",
                                             counterText: "",
                                             border: InputBorder.none,
+                                            hintStyle: TextStyle(
+                                                color: Theme.of(context).textTheme.bodyText2!.color,
+                                                fontFamily: "Manrope",
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -134,10 +161,22 @@ class RegistratePageFirst extends StatelessWidget {
                                           obscureText: true,
                                           maxLines: 1,
                                           maxLength: 255,
+                                          style: TextStyle(
+                                              color: Theme.of(context).textTheme.bodyText1!.color,
+                                              fontFamily: "Manrope",
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600
+                                          ),
                                           decoration: InputDecoration(
                                             hintText: "Повтор пароля",
                                             counterText: "",
                                             border: InputBorder.none,
+                                            hintStyle: TextStyle(
+                                                color: Theme.of(context).textTheme.bodyText2!.color,
+                                                fontFamily: "Manrope",
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600
+                                            ),
                                           ),
                                         ),
                                       ),
